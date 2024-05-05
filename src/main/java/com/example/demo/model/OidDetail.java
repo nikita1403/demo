@@ -27,7 +27,6 @@ public class OidDetail {
     @Column(name = "kind")
     private int kind;
 
-    // Геттеры и сеттеры
     public Long getOidId() {
         return oidId;
     }
