@@ -32,19 +32,20 @@ public class SNMPManager {
         tableUtils = new TableUtils(snmp, new DefaultPDUFactory());
     }
 
-    public Map<OID, String> getTable(OID[] oids, String community) throws IOException {
+    public Map<OID, String> getValueByTable(OID[] oids, String community) throws IOException {
         Map<OID, String> tableMap = new HashMap<OID, String>();
         List<TableEvent> events = tableUtils.getTable(getTarget(community), oids, null, null);
         for (TableEvent event : events) {
             if(event.isError())
             {
-                System.out.println("Error: " + event.getErrorMessage());
+                System.out.println("Ошибка: " + event.getErrorMessage());
             }
             else
             {
                 for (VariableBinding vb : event.getColumns())
                 {
-                    tableMap.put(vb.getOid(), vb.getVariable().toString());
+                    if(vb != null)
+                        tableMap.put(vb..getOid(), vb.getVariable().toString());
                 }
             }
         }

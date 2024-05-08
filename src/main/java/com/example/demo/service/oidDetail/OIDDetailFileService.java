@@ -12,7 +12,6 @@ public class OIDDetailFileService {
     OIDDetailRepository oidDetailRepository;
     public String getOIDByEntryName(String entryName, String mibFileName) {
         OidDetail OIDDetail = oidDetailRepository.findByMibFileFileNameAndName(mibFileName, entryName);
-        System.out.println(OIDDetail.getOid());
         return OIDDetail.getOid();
     }
 
