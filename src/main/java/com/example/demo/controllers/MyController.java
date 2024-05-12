@@ -8,6 +8,7 @@ import com.example.demo.service.mib.MibAnalysis;
 import com.example.demo.service.oidDetail.OIDDetailFileService;
 import com.example.demo.service.snmp.SNMPClient;
 import com.example.demo.service.snmp.SNMPInitializationService;
+import org.antlr.v4.runtime.misc.Pair;
 import org.ietf.jgss.Oid;
 import org.snmp4j.Snmp;
 import org.snmp4j.smi.OID;
@@ -34,19 +35,12 @@ public class MyController {
     {
         return MibAnalysis.getDescription(oid, originalFileName);
     }
-    @GetMapping("/getValueByName")
-    public OIDValueResponse getValueByName(@RequestParam String name, @RequestParam String mibFileName, @RequestParam String ip, @RequestParam int port) //Продумать лучший механизм, чтобы с каждым запросом не отправлять ip и port
-                                                                                                             //Можно будет сделать это на фронте
+    @PostMapping("/test")
+    public String apiTest()
     {
-        SNMPClient snmpClient = snmpInitializationService.getSnmpManager(ip, port);
-        if(snmpClient == null) return new OIDValueResponse("SNMP клиент с таким ip + port не найдено");
-        String oid = oidDetailFileService.getOIDByEntryName(name, mibFileName);
-        try {
-          return new OIDValueResponse(new HashMap<>(Map.of(new OID(oid),snmpClient.getAsString(oid, "public"))));
-        } catch (IOException e) {
-            return new OIDValueResponse("не найдено");
-        }
+        return "данные получены";
     }
+
     @GetMapping("/getMibFileNames")
     public List<String> getMibFileNames()
     {
@@ -55,31 +49,59 @@ public class MyController {
     @PostMapping("/getValueOfTable")
     public OIDValueResponse getValueOfTable(@RequestBody OidRequest oidRequest)
     {
-        List<OID> OIDs = getOidsByEntryName(oidRequest.getEntryNames(), oidRequest.getMibFileName());
+        Map<Map<OID, String>, Boolean> OIDs = getOidsByEntryName(oidRequest.getEntryNames(), oidRequest.getMibFileName());
         SNMPClient snmpClient = snmpInitializationService.getSnmpManager(oidRequest.getIp(), oidRequest.getPort());
         if(snmpClient == null)
         {
             return new OIDValueResponse("Ошибка, такой SNMP клиент не найден");
         }
-        Map<OID, String> OIDValues = null;
+        Map<String, String> OIDValues = null;
+        List<Pair<OID, String>> isScalarOIDs = new ArrayList<>();
+        List<Pair<OID, String>> isTableEntryOIDs = new ArrayList<>();
         try {
-            OIDValues = snmpClient.getValueByTable(OIDs.toArray(new OID[0]), "public");
-            return new OIDValueResponse(OIDValues);
+            OIDs.forEach((k, v) -> {
+                if(v) isScalarOIDs.add(mapToPair(k));
+                else  isTableEntryOIDs.add(mapToPair(k));
+
+            });
+            List<Pair<String, String>> responseOfTable = null;
+            List<Pair<String, String>> responseOfScalar = null;
+            if(!isScalarOIDs.isEmpty())
+            {
+                responseOfScalar = snmpClient.getAsString(isScalarOIDs, "public");
+            }
+            if(!isTableEntryOIDs.isEmpty())
+            {
+                responseOfTable = snmpClient.getValueByTable(isTableEntryOIDs, "public");
+            }
+            return new OIDValueResponse(responseOfTable);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
-    private List<OID> getOidsByEntryName(List<String> names, String mibFileName)
+    private Map<Map<OID, String>, Boolean> getOidsByEntryName(List<String> names, String mibFileName)
     {
-        List<OID> oids = new ArrayList<>();
+        Map<Map<OID, String>, Boolean> OIDs = new HashMap<>();
         for (String name : names) {
-            oids.add(new OID(oidDetailFileService.getOIDByEntryName(name.trim(), mibFileName)));
+            Pair<OID, Boolean> pair = oidDetailFileService.getOIDByEntryName(name.trim(), mibFileName);
+            OIDs.put(Map.of(pair.a, name), pair.b);
         }
-        return oids;
+        return OIDs;
     }
+
+    private Pair<OID, String> mapToPair(Map<OID, String> OIDValues)
+    {
+        final OID[] oid = new OID[1];
+        final String[] name = new String[1];
+        OIDValues.forEach((x, y) -> {
+            oid[0] = new OID(x);
+            name[0] = y;
+        });
+        return new Pair<>(oid[0], name[0]);
+
+    }
+
 
 
 
