@@ -19,12 +19,14 @@ public class SNMPClient {
         }
     }
 
-
     public List<Pair<String, String>> getAsString(List<Pair<OID, String>> OIDs, String community) throws IOException {
         return snmpManager.getAsString(OIDs, community);
     }
 
     public List<Pair<String, String>> getValueByTable(List<Pair<OID, String>> oids, String community) throws IOException {
         return snmpManager.getValueByTable(oids, community);
+    }
+    public void stop() throws IOException {
+        snmpManager.stop();
     }
 }

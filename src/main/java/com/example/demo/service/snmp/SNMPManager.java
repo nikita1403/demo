@@ -33,6 +33,9 @@ public class SNMPManager {
         transport.listen();
         tableUtils = new TableUtils(snmp, new DefaultPDUFactory());
     }
+    public void stop() throws IOException {
+        snmp.close();
+    }
 
     public List<Pair<String, String>> getValueByTable(List<Pair<OID, String>> oids, String community) throws IOException {
         List<Pair<String, String>> list = new ArrayList<>();
@@ -67,16 +70,19 @@ public class SNMPManager {
         List<Pair<String, String>> list = new ArrayList<>();
         for (Pair<OID, String> oid : OIDs) {
             PDU pdu = new PDU();
-            pdu.add(new VariableBinding(oid.a));
+            String oid2 = oid.a.toString();
+            oid2+=".0";
+
+            pdu.add(new VariableBinding(new OID(oid2)));
             pdu.setType(PDU.GET);
             ResponseEvent event = snmp.send(pdu, getTarget(community));
             if (event != null && event.getResponse() != null) {
                 list.add(new Pair<>(oid.b, event.getResponse().get(0).getVariable().toString()));
 
             }
-            else list.add( new Pair<>(oid.b,"Ответ от агента не получен!"));
+            else list.add(new Pair<>(oid.b,"Ответ от агента не получен!"));
         }
-        return null;
+        return list;
 
     }
 

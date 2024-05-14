@@ -6,6 +6,8 @@ import com.example.demo.service.snmp.SNMPInitializationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RequestMapping("/api/snmp/")
 @RestController()
 public class SNMPInitializationController {
@@ -20,5 +22,10 @@ public class SNMPInitializationController {
         SNMPClient snmpClient = snmpInitializationService.createSnmpManager(SNMPInitializeRequest.getIp(), SNMPInitializeRequest.getPort());
         if(snmpClient != null) {return "Клиент успешно инициализирован";}
         return "Произошла ошибка в инициализации";
+    }
+    @PostMapping("/delete")
+    public String deleteSNMPClient(@RequestBody SNMPInitializeRequest SNMPInitializeRequest) throws IOException {
+        String response = snmpInitializationService.destroySnmpManager(SNMPInitializeRequest.getIp(), SNMPInitializeRequest.getPort());
+        return response;
     }
 }
