@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.pojo.SNMPInitializeRequest;
 import com.example.demo.service.snmp.SNMPClient;
 import com.example.demo.service.snmp.SNMPInitializationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,8 @@ public class SNMPInitializationController {
         this.snmpInitializationService = snmpInitializationService;
     }
     @PostMapping("/initialize")
-    public String initializeSNMPClient(@RequestParam("ip") String ip, @RequestParam("port") int port) {
-        SNMPClient snmpClient = snmpInitializationService.createSnmpManager(ip, port);
+    public String initializeSNMPClient(@RequestBody SNMPInitializeRequest SNMPInitializeRequest) {
+        SNMPClient snmpClient = snmpInitializationService.createSnmpManager(SNMPInitializeRequest.getIp(), SNMPInitializeRequest.getPort());
         if(snmpClient != null) {return "Клиент успешно инициализирован";}
         return "Произошла ошибка в инициализации";
     }
