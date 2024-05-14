@@ -22,4 +22,9 @@ public class OIDDetailFileService {
         return OIDDetail.getKind() == 0;
     }
 
+    public String getDescriptionByOID(String OID, String mibFileName) {
+        OidDetail OIDDetail = oidDetailRepository.findByMibFileFileNameAndName(mibFileName, OID);
+        return OIDDetail.getDescription();
+    }
+
 }

@@ -29,11 +29,10 @@ public class MyController {
     @Autowired
     private SNMPInitializationService snmpInitializationService;
 
-    //Переписать метод, чтобы он вытягивал данные с БД
     @GetMapping("/getDescription")
     public String getDescriptionByOID(@RequestParam String oid, String originalFileName)
     {
-        return MibAnalysis.getDescription(oid, originalFileName);
+        return oidDetailFileService.getDescriptionByOID(oid, originalFileName);
     }
     @PostMapping("/test")
     public String apiTest()
@@ -74,6 +73,7 @@ public class MyController {
             {
                 responseOfTable = snmpClient.getValueByTable(isTableEntryOIDs, "public");
             }
+            responseOfTable.addAll(responseOfScalar);
             return new OIDValueResponse(responseOfTable);
         } catch (IOException e) {
             throw new RuntimeException(e);
