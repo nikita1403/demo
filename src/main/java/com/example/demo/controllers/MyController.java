@@ -69,12 +69,12 @@ public class MyController {
             {
                 responseOfScalar = snmpClient.getAsString(isScalarOIDs, "public");
             }
-            if(!isTableEntryOIDs.isEmpty())
+            else if(!isTableEntryOIDs.isEmpty())
             {
                 responseOfTable = snmpClient.getValueByTable(isTableEntryOIDs, "public");
             }
-            responseOfTable.addAll(responseOfScalar);
-            return new OIDValueResponse(responseOfTable);
+            else return new OIDValueResponse("Ошибка, нет ответа от клиента");
+            return new OIDValueResponse(responseOfTable, responseOfScalar);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
