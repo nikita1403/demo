@@ -21,7 +21,7 @@ public class UploadFileController {
     @PostMapping("/mibFile")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            return "File is empty!";
+            return "Нет файла!";
         }
         String originalFilename = file.getOriginalFilename();
         File mibFile = null;
@@ -38,6 +38,6 @@ public class UploadFileController {
         }
         mibFileService.parseAndSaveMIBFile(originalFilename, mibFile);
         mibFile.delete();
-        return "MIB-file successfully uploaded!\n FileName = " + originalFilename;
+        return "MIB-файл успешно загружен!";
     }
 }
