@@ -79,7 +79,11 @@ public class MyController {
             throw new RuntimeException(e);
         }
     }
-
+    @GetMapping("/getOIDInfoByMIBFileName")
+    public List<OidDetail> getOIDInfoByMIBFileName(@RequestParam String mibFileName)
+    {
+        return mibFileService.getOIDDetailByMIBFileName(mibFileName);
+    }
     private Map<Map<OID, String>, Boolean> getOidsByEntryName(List<String> names, String mibFileName)
     {
         Map<Map<OID, String>, Boolean> OIDs = new HashMap<>();

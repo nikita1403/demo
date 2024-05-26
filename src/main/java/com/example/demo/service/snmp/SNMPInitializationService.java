@@ -3,7 +3,9 @@ package com.example.demo.service.snmp;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +21,7 @@ public class SNMPInitializationService {
             }
         }
         SNMPClient snmpClient = new SNMPClient(ip, port);
+        System.out.println(generateKey(ip, port));
         snmpClients.put(generateKey(ip, port), snmpClient);
         return snmpClient;
     }
@@ -38,5 +41,8 @@ public class SNMPInitializationService {
             return "Клиент успешно удален";
         }
         else return "Такого клиента не найдено";
+    }
+    public List<String> getSNMPClients() {
+        return new ArrayList<>(snmpClients.keySet());
     }
 }

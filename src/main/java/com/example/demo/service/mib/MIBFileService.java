@@ -2,6 +2,7 @@ package com.example.demo.service.mib;
 
 
 import com.example.demo.model.MibFile;
+import com.example.demo.model.OidDetail;
 import com.example.demo.parser.MIBData;
 import com.example.demo.parser.MIBParser;
 import com.example.demo.repository.MIBFileRepository;
@@ -30,5 +31,8 @@ public class MIBFileService {
     }
     public List<String> getAllMIBFileNames() {
        return mibFileRepository.findAll().stream().map(MibFile::getFileName).toList();
+    }
+    public List<OidDetail> getOIDDetailByMIBFileName(String mibFileName) {
+        return mibFileRepository.findByFileName(mibFileName).getOidDetails();
     }
 }

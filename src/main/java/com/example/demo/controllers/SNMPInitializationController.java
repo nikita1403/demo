@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequestMapping("/api/snmp/")
 @RestController()
@@ -27,5 +28,9 @@ public class SNMPInitializationController {
     public String deleteSNMPClient(@RequestBody SNMPInitializeRequest SNMPInitializeRequest) throws IOException {
         String response = snmpInitializationService.destroySnmpManager(SNMPInitializeRequest.getIp(), SNMPInitializeRequest.getPort());
         return response;
+    }
+    @GetMapping("/getSNMPClients")
+    public List<String> getAllSNMPClients(){
+        return snmpInitializationService.getSNMPClients();
     }
 }

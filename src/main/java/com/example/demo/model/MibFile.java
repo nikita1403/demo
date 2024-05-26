@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public class MibFile {
     private String fileName;
 
     @OneToMany(mappedBy = "mibFile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+
     private List<OidDetail> oidDetails;
 
     // Геттеры и сеттеры
